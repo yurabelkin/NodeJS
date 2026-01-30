@@ -1,0 +1,19 @@
+{
+  "name": "printdate",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Yury Belkin",
+  "type": "commonjs",
+  "main": "printdate.js",
+  "bin": {
+    "printdate": "printdate.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {}
+}
