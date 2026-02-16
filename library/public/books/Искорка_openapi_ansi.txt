@@ -1,0 +1,209 @@
+openapi: 3.0.4
+info:
+  version: 1.0.0
+  title: API кинотетара "Искорка"
+  description: |
+    # API кинотетара "Искорка" для создания броней, получения расписания и данных о фильмах
+    Используется на веб-сайте, в мобильном приложении кинотеатра, взаимоджействует с ПО кассы
+servers:
+  - url: /
+tags:
+  - name: Фильм
+    description: Сведения о фильме
+  - name: Бронирование
+    description: Данные бронирований
+  - name: Расписание
+    description: Получение сетки расписания
+
+paths:
+  /film/{filmID}:
+    get:
+      tags:
+        - Фильм
+      summary: Получить данные фильма
+      parameters:
+        - name: filmID
+          in: path
+          description: ID фильма
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: Название фильма
+                    example: Терминатор
+                  cat:
+                      type: string
+                      description: Категория
+                      example: 18+
+                      enum: 
+                        - 0+
+                        - 6+
+                        - 16+ 
+                        - 18+
+                  active:
+                      type: boolean
+                      description: Активность
+                      example: true
+                  trailerURL:
+                      type: string
+                      description: Ссылка на трейлер
+                      example: https://ya.ru/video/preview/8081982770249643999
+                  kURL:
+                      type: string
+                      description: Ссылка на Кинопоиск
+                      example: https://www.kinopoisk.ru/film/50
+        '404':
+          description: Фильм не найден
+        '500':
+          description: Ошибка сервера
+          
+  /timetable/:
+    get:
+      tags:
+        - Расписание
+      summary: Получить расписание
+      parameters:
+        - name: dateFrom
+          in: query
+          description: начало интервала дат
+          required: true
+          schema:
+            type: integer
+        - name: dateTo
+          in: query
+          description: конец интервала дат
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    filmID:
+                      type: integer
+                      description: id фильма
+                      example: 1234
+                    dateFrom:
+                      type: string
+                      description: Дата и время начала
+                      example: 23.04.2025 10:00
+                    dateTo:
+                      type: string
+                      description: Дата и время окончания
+                      example: 23.04.2025 11:30
+
+        '404':
+          description: Нет сеансов
+        '500':
+          description: Ошибка сервера
+      
+  /booking/{bookingID}:
+    get:
+      tags:
+        - Бронирование
+      summary: Получить данные брони
+      parameters:
+        - name: bookingID
+          in: path
+          description: ID бронирования
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/booking"
+
+        '404':
+          description: Бронь не найдена
+        '403':
+          description: Доступ запрещен
+        '500':
+          description: Ошибка сервера
+    patch:
+      tags:
+        - Бронирование
+      summary: Изменить данные брони
+      parameters:
+        - name: bookingID
+          in: path
+          description: ID бронирования
+          required: true
+          schema:
+            type: integer
+        - name: bookingData
+          in: query
+          description: Данные для обновления
+          required: true
+          schema:
+            $ref: "#/components/schemas/booking"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/booking"
+
+        '404':
+          description: Бронь не найдена
+        '403':
+          description: Доступ запрещен
+        '500':
+          description: Ошибка сервера
+      
+components:
+  schemas:
+      booking:
+        type: object
+        properties:
+          booking_id:
+            type: integer
+            description: id брони
+            example: 1234
+          active:
+            type: boolean
+            description: активность брони (ложь = броньудалена)
+            example: false
+          slot_id:
+            type: integer
+            description: id слота расписания
+            example: 1234
+          client_id:
+            type: integer
+            description: id клиента
+            example: 1234
+          seats:
+            type: array
+            items:
+              type: object
+              properties:
+                row:
+                  type: integer
+                  description: Номер ряда
+                  example: 6
+                seat:
+                  type: integer
+                  description: Номер места
+                  example: 16
+            description: массив мест
+            example: [{row: 1,seat: 4}, {row: 2,seat: 6}]
+      
