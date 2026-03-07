@@ -19,8 +19,8 @@ class Book {
 
 // тестовые данные
 const books = [];
-books.push(new Book(uuid(), 'Заглавие1', 'Книга по теме1', 'Иванов И.И., Петров П.П.', '', '', ''));
-books.push(new Book(uuid(), 'Заглавие2', 'Книга по теме2', 'Иванов И.И., Петров П.П.', '', '', ''));
+books.push(new Book(uuid(), 'Заглавие1', 'Книга по теме1', 'Иванов И.И., Петров П.П.', '', 'https://images.eksmo.ru/images/covers_01_min.jpg', ''));
+books.push(new Book(uuid(), 'Заглавие2', 'Книга по теме2', 'Иванов И.И., Петров П.П.', '', 'https://images.eksmo.ru/images/covers_01_min.jpg', ''));
 
 
 function findBook(id) {

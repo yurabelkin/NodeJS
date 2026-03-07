@@ -1,0 +1,14 @@
+<%- include('../port/header', {title: title}) %>
+
+    <% if(book) { 
+        %>
+        <table>
+            <tr><td>Авторы</td><td><%=book.authors%></td></tr>
+            <tr><td>Обложка</td><td><img src="<%=book.fileCover%>"></td></tr>
+            <tr><td>Описание</td><td><%=book.description%></td></tr>
+            <tr><td>Скачать</td><td><a href="http://127.0.0.1/api/books/<%=book.id%>/download">Скачать книгу</a></td></tr>
+        </table>
+
+        <% } %>
+
+<%- include('../port/footer') %>

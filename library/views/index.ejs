@@ -1,0 +1,14 @@
+<%- include('./port/header', {title: title}) %>
+
+    <% if(books.length) { %>
+        <ul>
+            <% books.forEach(function(el) { %>
+                <li><a href="/view/<%=el.id%>">
+                        <%=el.title%>
+                    </a><a class="editlink" href="/update/<%=el.id%>">[EDIT]</a></li>
+
+                <% }); %>
+        </ul>
+        <% } %>
+
+            <%- include('./port/footer') %>

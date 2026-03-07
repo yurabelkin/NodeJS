@@ -1,0 +1,12 @@
+<%- include('../port/header', {title: title}) %>
+<form method="<%=method%>" action="/api/books" enctype="multipart/form-data">
+    <input type="hidden" name="id">
+    <label>Название</label><input type="text" name="title"><br>
+    <label>Авторы</label><input type="text" name="authors"><br>
+    <label>Описание</label><input type="text" name="description"><br>
+    <label>Ссылка на обложку</label><input type="text" name="fileCover"><br>
+    <label>Файл</label><input type="file" name="book"><br>
+
+<button>Сохранить</button>
+</form>
+<%- include('../port/footer') %>
