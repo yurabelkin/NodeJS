@@ -87,7 +87,7 @@ router.get('/:id', (req, res) => {
 
 router.get('/:id/download', (req, res) => {
     const { id } = req.params;
-    curbook = findBook(id)
+    curbook = findBook(id);
     if (curbook !== false) {
         res.status(200);
         res.sendFile(books[curbook].fileBook, { root: path.join(__dirname, '../') })
@@ -96,20 +96,20 @@ router.get('/:id/download', (req, res) => {
     }
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', uploader.single('book'), (req, res) => { 
     const { id } = req.params;
     let curbook = findBook(id)
+    
     if (curbook !== false) {
         books[curbook].title = req.body.title;
         books[curbook].description = req.body.description;
         books[curbook].authors = req.body.authors;
-        books[curbook].favorite = req.body.favorite;
         books[curbook].fileCover = req.body.fileCover;
         books[curbook].fileName = req.body.fileName;
-        res.status(200);
+        
+        res.status(200).json(books[curbook]);
     } else {
-        res.status(404);
-        res.json('404 | книга не найдена');
+        res.status(404).json('404 | книга не найдена');
     }
 });
 

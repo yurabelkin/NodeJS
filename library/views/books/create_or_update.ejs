@@ -1,12 +1,34 @@
 <%- include('../port/header', {title: title}) %>
-<form method="<%=method%>" action="/api/books" enctype="multipart/form-data">
-    <input type="hidden" name="id">
-    <label>Название</label><input type="text" name="title"><br>
-    <label>Авторы</label><input type="text" name="authors"><br>
-    <label>Описание</label><input type="text" name="description"><br>
-    <label>Ссылка на обложку</label><input type="text" name="fileCover"><br>
-    <label>Файл</label><input type="file" name="book"><br>
+    <% let id="" ; let btitle="" ; let desription="" ; let authors="" ; let fileCover="" ; if (method=="PUT" ) { id="/"
+        + book.id; btitle=book.title; authors=book.authors; description=book.description; fileCover=book.fileCover; } %>
+        <script>
+            function send(e, method) {
+                if (method == 'PUT') {
+                    e.preventDefault();
 
-<button>Сохранить</button>
-</form>
-<%- include('../port/footer') %>
+                    const form = document.getElementById('bookform');
+                    console.log(new FormData(form));
+                    fetch('http://localhost:3000/api/books<%=id%>', {
+                        method: 'PUT',
+                        body: new FormData(form),
+                    })
+                        .then(response => response.json());
+                    return false;
+                }
+            }
+        </script>
+        <form id="bookform" method="<%=method%>" action="/api/books<%=id%>" enctype="multipart/form-data"
+            onsubmit="return send(event,'<%=method%>')">
+            <label>Название</label><input type="text" name="title" value="<%=btitle%>"> <br>
+            <label>Авторы</label><input type="text" name="authors" value="<%=authors%>"> <br>
+            <label>Описание</label><input type="text" name="description" value="<%=description%>"> <br>
+            <label>ссылка на файл обложки</label><input type="text" name="fileCover" value="<%=fileCover%>"> <br>
+
+            <%if (method=='PUT' ) { %>
+                <div>Сейчас загружен этот <a href="http://127.0.0.1/api/books/<%=book.id%>/download">файл</a></div>
+                <%}%>
+                    <label>Файл</label><input type="file" name="book"><br>
+
+                    <button>Сохранить</button>
+        </form>
+        <%- include('../port/footer') %>
