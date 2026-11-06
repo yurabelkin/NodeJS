@@ -5,3 +5,6 @@
 005-http/.env
 library/node_modules
 library/.env
+counter/node_modules
+counter/.env
+counter/counter.json
