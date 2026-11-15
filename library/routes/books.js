@@ -3,6 +3,7 @@ const router = express.Router();
 const { v4: uuid } = require('uuid');
 const uploader = require('../middleware/upload.js');
 const path = require('path');
+const http = require('http');
 
 class Book {
     constructor(id = uuid(), title = "", description = "", authors = "", favorite = "", fileCover = "", fileName = "", fileBook = "") {
@@ -34,6 +35,22 @@ function findBook(id) {
 
 router.get('/', (req, res) => {
     res.status(200);
+    // добавляем счетчик
+    books.forEach(book => {
+        http.get("http://localhost:3001/" + book.id, (res2) => {
+            let rowData = '';
+            res2.setEncoding('utf8')
+            res2.on('data', (chunk) => rowData += chunk)
+            res2.on('end', () => {
+                let bookviews = JSON.parse(rowData).count;
+                const curbook = books.find(b => b.id === book.id);
+                curbook.views = bookviews;
+
+            })
+        }).on('error', (err) => {
+            console.error(err)
+        })
+    })
     res.json(books);
 }
 );
@@ -77,6 +94,18 @@ router.get('/:id', (req, res) => {
     curbook = findBook(id)
 
     if (curbook !== false) {
+
+        // incr счетчика
+        const incrReq = http.request({
+            hostname: 'localhost',
+            port: 3001,
+            path: '/' + id + '/incr',
+            method: 'POST',
+        });
+
+        incrReq .on('error', (err) => console.error(err));
+        incrReq .end();
+        
         res.status(200);
         res.json(books[curbook]);
     } else {
@@ -96,17 +125,17 @@ router.get('/:id/download', (req, res) => {
     }
 });
 
-router.put('/:id', uploader.single('book'), (req, res) => { 
+router.put('/:id', uploader.single('book'), (req, res) => {
     const { id } = req.params;
     let curbook = findBook(id)
-    
+
     if (curbook !== false) {
         books[curbook].title = req.body.title;
         books[curbook].description = req.body.description;
         books[curbook].authors = req.body.authors;
         books[curbook].fileCover = req.body.fileCover;
         books[curbook].fileName = req.body.fileName;
-        
+
         res.status(200).json(books[curbook]);
     } else {
         res.status(404).json('404 | книга не найдена');

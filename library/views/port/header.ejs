@@ -8,10 +8,16 @@
         display: flex;
         gap: 20px;
     }
+
     .editlink {
         margin-left: 5px;
         font-size: 10px;
         color: red;
+    }
+
+    .views {
+        margin-left: 5px;
+        font-size: 12px;
     }
 </style>
 <header>
@@ -19,7 +25,11 @@
         <%= title %>
     </h1>
     <nav>
-        <a href="/"><div>Главная (список книг)</div></a>
-        <a href="/create/"><div>Добавить книгу</div></a>
+        <a href="/">
+            <div>Главная (список книг)</div>
+        </a>
+        <a href="/create/">
+            <div>Добавить книгу</div>
+        </a>
     </nav>
 </header>

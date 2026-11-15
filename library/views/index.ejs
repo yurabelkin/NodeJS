@@ -5,8 +5,8 @@
             <% books.forEach(function(el) { %>
                 <li><a href="/view/<%=el.id%>">
                         <%=el.title%>
-                    </a><a class="editlink" href="/update/<%=el.id%>">[EDIT]</a></li>
-
+                    </a><a class="editlink" href="/update/<%=el.id%>">[EDIT]</a><span class="views">👁: <%=el.views%></span></li>
+                    
                 <% }); %>
         </ul>
         <% } %>
