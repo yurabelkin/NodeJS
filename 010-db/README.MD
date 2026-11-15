@@ -1,5 +1,6 @@
 # Запрос(ы) для вставки данных минимум о двух книгах в коллекцию books
 
+```mongodb
 db.books.insertMany(
    [     {
         "id": "36922f5d-ef57-419d-91cf-054909bb6d32",
@@ -25,16 +26,18 @@ db.books.insertMany(
       ordered: false
    }
 )
+```
 # Запрос для поиска полей документов коллекции books по полю title
-
+```mongodb
 db.books.find(
     {"title": "Заглавие1"}
 )
-
+```
 # Запрос для редактирования полей: description и authors коллекции books по _id записи
-
+```mongodb
 db.books.updateOne(
    {"_id": ObjectId("653a1b2c4d5e6f7a8b9c0d1e")},
 {$set: {       "description": "Книга по теме1",
         "authors": "Иванов И.И., Петров П.П."}}
 )
+```
