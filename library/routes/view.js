@@ -27,6 +27,7 @@ router.get('/view/:id', (req, res) => {
         res2.setEncoding('utf8')
         res2.on('data', (chunk) => rowData += chunk)
         res2.on('end', () => {
+            console.log(rowData);
             const book = JSON.parse(rowData);
             res.render('books/view', {
                 title: `${book.title} - просмотр`, book: book

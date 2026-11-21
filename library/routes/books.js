@@ -4,6 +4,7 @@ const { v4: uuid } = require('uuid');
 const uploader = require('../middleware/upload.js');
 const path = require('path');
 const http = require('http');
+const COUNTER_URL = process.env.COUNTER_URL || 'http://localhost:3001';
 
 class Book {
     constructor(id = uuid(), title = "", description = "", authors = "", favorite = "", fileCover = "", fileName = "", fileBook = "") {
@@ -37,7 +38,8 @@ router.get('/', (req, res) => {
     res.status(200);
     // добавляем счетчик
     books.forEach(book => {
-        http.get("http://localhost:3001/" + book.id, (res2) => {
+        console.log(COUNTER_URL + "/");
+        http.get(COUNTER_URL + "/" + book.id, (res2) => {
             let rowData = '';
             res2.setEncoding('utf8')
             res2.on('data', (chunk) => rowData += chunk)
@@ -96,16 +98,17 @@ router.get('/:id', (req, res) => {
     if (curbook !== false) {
 
         // incr счетчика
+        const counterUrl = new URL(COUNTER_URL);
         const incrReq = http.request({
-            hostname: 'localhost',
-            port: 3001,
+            hostname: counterUrl.hostname,
+            port: counterUrl.port || 3001,
             path: '/' + id + '/incr',
             method: 'POST',
         });
 
-        incrReq .on('error', (err) => console.error(err));
-        incrReq .end();
-        
+        incrReq.on('error', (err) => console.error(err));
+        incrReq.end();
+
         res.status(200);
         res.json(books[curbook]);
     } else {

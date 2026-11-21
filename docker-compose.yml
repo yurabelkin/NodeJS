@@ -1,0 +1,71 @@
+services:
+  mongo:
+    image: mongo:7
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: library
+      MONGO_INITDB_DATABASE: appdb
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://root:library@mongo:27017/
+      ME_CONFIG_BASICAUTH_ENABLED: "true"
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: library
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
+  library:
+    build:
+      context: ./library
+      dockerfile: Dockerfile
+    container_name: library-service
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      MONGO_URL: mongodb://root:library@mongo:27017/appdb?authSource=admin
+      COUNTER_URL: http://counter:3001 
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
+  counter:
+    build:
+      context: ./counter
+      dockerfile: Dockerfile
+    container_name: counter-service
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+    environment:
+      MONGO_URL: mongodb://root:library@mongo:27017/appdb?authSource=admin
+      LIBRARY_URL: http://library:3000
+      COUNTER_FILE: /app/data/counter.json
+    volumes:
+      - counter-data:/app/data
+    depends_on:
+      - mongo
+      - library
+    networks:
+      - app-network
+
+volumes:
+  mongo-data:
+  counter-data:
+
+networks:
+  app-network:
+    driver: bridge

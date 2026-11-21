@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');
+const FILE = process.env.COUNTER_FILE || 'counter.json';
 
 function counter(id, incr = false) {
     let data = {};
     data[id] = 0;
     try {
-        data = JSON.parse(fs.readFileSync('counter.json', 'utf-8'));
+        data = JSON.parse(fs.readFileSync(FILE, 'utf-8'));
     }
     catch (err) {
         if (err.code === 'ENOENT') { let data = {}; }
@@ -20,7 +21,7 @@ function counter(id, incr = false) {
     if (incr == true) {
         count ++;
         data[id] = count;
-        fs.writeFileSync('counter.json', JSON.stringify(data), 'utf-8');
+        fs.writeFileSync(FILE, JSON.stringify(data), 'utf-8');
     }
     let countObj = {
         count: count
