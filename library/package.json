@@ -17,6 +17,7 @@
   "dependencies": {
     "ejs": "^5.0.1",
     "express": "^5.2.1",
+    "mongoose": "^9.12.3",
     "multer": "^2.0.2",
     "pm2": "^6.0.14",
     "uuid": "^13.0.0"
