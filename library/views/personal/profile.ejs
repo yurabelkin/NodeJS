@@ -1,0 +1,9 @@
+<%- include('../port/header', {title: title}) %>
+<%if (user) { %>
+<br>
+Имя: <%=user.name%> 
+<br>Логин: <%=user.login%> 
+<br>Email: <%=user.email%> 
+<% } %> 
+
+<%- include('../port/footer') %>
