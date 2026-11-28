@@ -2,73 +2,12 @@ const express = require('express');
 const router = express.Router();
 const { v4: uuid } = require('uuid');
 const uploader = require('../middleware/upload.js');
+const db = require('../db/db.js');
 const path = require('path');
 const http = require('http');
-const mongoose = require('mongoose');
 const COUNTER_URL = process.env.COUNTER_URL || 'http://localhost:3001';
-const MONGO_URL = process.env.MONGO_URL || 'mongodb://root:library@localhost:27017/appdb';
 
-//MobgoDB Functions - start
-
-async function mongoStart() {
-    try {
-        await mongoose.connect(MONGO_URL);
-    }
-    catch (e) {
-        console.log(e);
-    }
-}
-
-function mongoSave(book) {
-    const Book = require('../models/books.js');
-    const Newbook = new Book(book);
-    try {
-        Newbook.save();
-    }
-    catch (e) {
-        console.log(e);
-    }
-}
-
-async function mongoFind(condition) {
-    try {
-        const Book = require('../models/books.js');
-        const Foundbook = await Book.find(condition).select('-_id -__v');
-        return Foundbook;
-    }
-    catch (e) {
-        console.log(e);
-    }
-}
-
-async function mongoUpdate(filter, update) {
-    try {
-        const Book = require('../models/books.js');
-        const Curbook = await Book.findOneAndUpdate(filter, update, { new: true });
-        return Curbook;
-    }
-    catch (e) {
-        console.log(e);
-    }
-}
-
-async function mongoDelete(filter) {
-    try {
-        const Book = require('../models/books.js');
-        const delResult = await Book.deleteOne(filter);
-        if (delResult.deletedCount == 1) {
-            return true;
-        }
-        else { return false; }
-    }
-    catch (e) {
-        console.log(e);
-    }
-}
-
-//MobgoDB Functions - end
-
-mongoStart();
+db.mongoStart();
 
 class Book {
     constructor(id = uuid(), title = "", description = "", authors = "", favorite = "", fileCover = "", fileName = "", fileBook = "") {
@@ -80,14 +19,14 @@ class Book {
         this.fileCover = fileCover;
         this.fileName = fileName;
         this.fileBook = fileBook;
-        mongoSave(this);
+        db.mongoSave(this);
     }
 }
 
 // тестовые данные
 async function initData() {
 
-    const savedBooks = await mongoFind();
+    const savedBooks = await db.mongoFind();
     let books = [];
     if (savedBooks.length == 0) {
         books.push(new Book(uuid(), 'Заглавие1', 'Книга по теме1', 'Иванов И.И., Петров П.П.', '', 'https://images.eksmo.ru/images/covers_01_min.jpg', ''));
@@ -136,7 +75,7 @@ function getViews(bookId) {
 }
 
 router.get('/', async (req, res) => {
-    const books = await mongoFind();
+    const books = await db.mongoFind();
 
     const result = await Promise.all(
         books.map(async (book) => {
@@ -183,7 +122,7 @@ router.post('/', uploader.single('book'), (req, res) => {
 
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
-    let curbook = await mongoFind({ id: id });
+    let curbook = await db.mongoFind({ id: id });
     if (typeof curbook === 'object' && curbook[0].id) {
 
         // incr счетчика
@@ -208,7 +147,7 @@ router.get('/:id', async (req, res) => {
 
 router.get('/:id/download', async (req, res) => {
     const { id } = req.params;
-    let curbook = await mongoFind({ id: id });
+    let curbook = await db.mongoFind({ id: id });
     if (curbook) {
         res.status(200);
         res.sendFile(curbook[0].fileBook, { root: path.join(__dirname, '../') })
@@ -226,7 +165,7 @@ router.put('/:id', uploader.single('book'), async (req, res) => {
         fileCover: req.body.fileCover,
         fileName: req.body.fileName,
     };
-    let curbook = await mongoUpdate({ id: id }, update);
+    let curbook = await db.mongoUpdate({ id: id }, update);
 
     if (curbook != null) {
         res.status(200).json(curbook);
@@ -239,7 +178,7 @@ router.put('/:id', uploader.single('book'), async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     const filter = { id: id };
-    let delbook = await mongoDelete({ id: id });
+    let delbook = await db.mongoDelete({ id: id });
     if (delbook !== false) {
         res.status(200);
         res.json('ok');

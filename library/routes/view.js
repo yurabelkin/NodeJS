@@ -63,4 +63,28 @@ router.get('/update/:id', (req, res) => {
     })
 });
 
+router.get('/api/user/login', (req, res) => {
+    if (!req.isAuthenticated()) {
+        res.render('personal/login', {
+            title: "Вход"
+        });
+    }
+    else {
+        res.render('personal/profile', { title: "Профиль", user: req.user })
+    }
+});
+
+router.get('/api/user/me',
+    (req, res, next) => {
+        if (!req.isAuthenticated()) {
+            return res.redirect('/api/user/login')
+        }
+        next()
+    },
+    (req, res) => {
+        console.log(req.user);
+        res.render('personal/profile', { title: "Профиль", user: req.user })
+    }
+)
+
 module.exports = router;
